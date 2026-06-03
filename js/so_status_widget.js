@@ -1,4 +1,4 @@
-// Strategic Objectives Status Widget (Progress-Based + Colored Preview Bar)
+// Strategic Objectives Status Widget (Progress-Based + Preview Image)
 
 tau.mashups
 .addDependency('jQuery')
@@ -19,9 +19,10 @@ tau.mashups
 
         name: 'Strategic Objectives Status',
 
-        // ✅ Your preview bar (kept intact)
-        description:
-          'Status summary of Strategic Objectives',
+        // ✅ ADD THIS LINE (your GitHub image)
+        previewSrc: 'https://raw.githubusercontent.com/Bret-ATP/atp_spm_widgets/main/img/so_status_preview.png',
+
+        description: 'Status summary of Strategic Objectives',
 
         tags: ['OKR', 'Strategic Objectives'],
         placeholder: 'restui_board',
@@ -89,7 +90,7 @@ tau.mashups
 
             $widget.append($center);
 
-            // Segmented bar (RED → ORANGE → GREEN)
+            // Segmented bar
             var $bar = $('<div>').css({
               display: 'flex',
               height: '40px',
@@ -105,29 +106,20 @@ tau.mashups
             var greenWidth = total ? (data.green / total * 100) : 0;
 
             $bar.append(
-              $('<div>').css({
-                width: redWidth + '%',
-                background: '#ef4444'
-              })
+              $('<div>').css({ width: redWidth + '%', background: '#ef4444' })
             );
 
             $bar.append(
-              $('<div>').css({
-                width: amberWidth + '%',
-                background: '#f59e0b'
-              })
+              $('<div>').css({ width: amberWidth + '%', background: '#f59e0b' })
             );
 
             $bar.append(
-              $('<div>').css({
-                width: greenWidth + '%',
-                background: '#22c55e'
-              })
+              $('<div>').css({ width: greenWidth + '%', background: '#22c55e' })
             );
 
             $widget.append($bar);
 
-            // ✅ LEGEND (ORDER FIXED + SPACING POLISHED)
+            // Legend (RED → ORANGE → GREEN)
             var $legend = $('<div>').css({
               display: 'flex',
               'justify-content': 'center',
@@ -135,7 +127,6 @@ tau.mashups
               'margin-top': '10px'
             });
 
-            // Order now matches bar: RED → ORANGE → GREEN
             $legend.append($('<div>').text('🔴 Critical: ' + data.red));
             $legend.append($('<div>').text('🟠 At Risk: ' + data.amber));
             $legend.append($('<div>').text('🟢 On Track: ' + data.green));
