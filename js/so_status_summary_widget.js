@@ -1,4 +1,4 @@
-// Strategic Objectives Summary (Progress-Based + Side-by-Side Preview)
+// Strategic Objectives Summary (Progress-Based + Preview Image)
 
 tau.mashups
 .addDependency('jQuery')
@@ -8,17 +8,21 @@ tau.mashups
     var appConfigurator;
 
     configurator.getGlobalBus().on('configurator.ready', function(evt, readyConfigurator) {
+
         if (!appConfigurator && readyConfigurator._id && readyConfigurator._id.match(/board/)) {
+
             appConfigurator = readyConfigurator;
 
             readyConfigurator.getDashboardWidgetTemplateRegistry().addWidgetTemplate({
+
                 id: 'strategic_objectives_summary_progress',
 
                 name: 'Strategic Objectives Summary',
 
-                // ✅ SIDE-BY-SIDE "MULTI-CARD" PREVIEW
-                description:
-                    'Strategic Objctives grid with progress and status',
+                // ✅ ADDED PREVIEW IMAGE (from your GitHub commit)
+                previewSrc: 'https://raw.githubusercontent.com/Bret-ATP/atp_spm_widgets/1dfb4b32efe1a64da9f918c7a114619fcc903d35/img/so_status_summary_preview.png',
+
+                description: 'Strategic Objectives grid with progress and status',
 
                 tags: ['OKR', 'Strategic Objectives'],
                 placeholder: 'restui_board',
@@ -41,9 +45,11 @@ tau.mashups
                             'border-radius': '8px'
                         });
 
-                        $widget.append($('<h3>').text(
-                            props.settings.title || 'Strategic Objectives'
-                        ));
+                        $widget.append(
+                            $('<h3>').text(
+                                props.settings.title || 'Strategic Objectives'
+                            )
+                        );
 
                         var $grid = $('<div>').css({
                             display: 'grid',
@@ -63,9 +69,11 @@ tau.mashups
                             });
 
                             // Title
-                            $card.append($('<div>').text(obj.name).css({
-                                'font-weight': '600'
-                            }));
+                            $card.append(
+                                $('<div>').text(obj.name).css({
+                                    'font-weight': '600'
+                                })
+                            );
 
                             // Status + %
                             var $row = $('<div>').css({
@@ -74,18 +82,22 @@ tau.mashups
                                 'margin': '10px 0'
                             });
 
-                            $row.append($('<div>').text(obj.status).css({
-                                background: color,
-                                color: 'white',
-                                padding: '4px 10px',
-                                'border-radius': '10px',
-                                'font-size': '12px'
-                            }));
+                            $row.append(
+                                $('<div>').text(obj.status).css({
+                                    background: color,
+                                    color: 'white',
+                                    padding: '4px 10px',
+                                    'border-radius': '10px',
+                                    'font-size': '12px'
+                                })
+                            );
 
-                            $row.append($('<div>').text(obj.progress + '%').css({
-                                color: color,
-                                'font-weight': 'bold'
-                            }));
+                            $row.append(
+                                $('<div>').text(obj.progress + '%').css({
+                                    color: color,
+                                    'font-weight': 'bold'
+                                })
+                            );
 
                             $card.append($row);
 
@@ -131,7 +143,6 @@ tau.mashups
                                 var progress = progressRaw || 0;
                                 var progressPct = Math.round(progress * 100);
 
-                                // ✅ Derived status (portable)
                                 var status, color;
 
                                 if (progressPct >= 70) {
@@ -158,6 +169,7 @@ tau.mashups
                     };
 
                     render();
+
                     return { update: render };
                 }
             });
