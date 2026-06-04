@@ -1,40 +1,69 @@
 # Strategic OKR Widget Pack (Targetprocess)
 
-This repository contains 3 custom widgets for visualizing Strategic Objectives and Key Results (OKRs) in Targetprocess dashboards.
+This repository provides a set of custom dashboard widgets for visualizing Strategic Objectives and Key Results (OKRs) in Targetprocess (Apptio Targetprocess).
+
+The widgets are designed to be **plug-and-play**, require **no configuration**, and include **interactive modal navigation** so you can explore entities directly from dashboards.
 
 ---
 
 ## 📦 Included Widgets
 
-- Strategic Objectives Status  
-- Strategic Objectives Summary  
+This pack includes 3 widgets:
+
+- Strategic Objectives Status
+- Strategic Objectives Summary
 - Strategic OKR Summary (Objectives + Key Results)
 
+### ✅ Shared Capabilities
+
 All widgets:
+
 - Use native Strategic Objectives and Key Results data
-- Automatically calculate status from progress (no Status field required)
-- Include preview images (no setup required)
+- Require no configuration
+- Automatically calculate status from progress
+- Display Key Results nested under Objectives
+- Include preview images in the widget picker
+- Support click-through modal navigation
+
+---
+
+## ✨ Interactive Modal Navigation
+
+You can now click directly on:
+
+- Strategic Objectives
+- Key Results
+
+This opens the entity in a modal overlay:
+
+- Removes left-side navigation (folders/sidebar)
+- Preserves full Targetprocess entity behavior
+- Supports navigation within the modal (tabs, relationships, etc.)
+- Maintains breadcrumbs and back navigation
+- Allows scrolling for large entities
+- Keeps your place on the dashboard when closed
 
 ---
 
 ## ⚠️ Prerequisites (IMPORTANT)
 
-Before installing these widgets, your Targetprocess instance must have the OKR Solution enabled.
+Before installing, your Targetprocess instance must have the OKR Solution enabled.
 
-These widgets rely on:
+These widgets depend on:
+
 - Strategic Objectives
 - Key Results
 - Progress tracking
 
-### ✅ How to Check
+### ✅ How to Verify
 
-1. Click the **gear icon (Settings)**
+1. Click **Settings (gear icon)**
 2. Go to **Solutions / Installed Solutions**
 3. Confirm you see:
    - Strategic Objectives
    - Key Results
 
-### ❌ If Not Installed
+### ❌ If Missing
 
 Contact your Targetprocess administrator to enable the OKR Solution.
 
@@ -44,39 +73,37 @@ Contact your Targetprocess administrator to enable the OKR Solution.
 
 ### Step 1 — Copy the Widget Code
 
-1. Open this file in GitHub:
-
+1. Open:
    js/tp-widget-pack.js
 
 2. Click **Raw**
 
-3. Select all the code (Ctrl+A or Cmd+A)
+3. Select all code (Ctrl+A / Cmd+A)
 
 4. Copy it
 
 ---
 
-### Step 2 — Open Mashups in Targetprocess
+### Step 2 — Open Mashups
 
-1. Click the **gear icon (Settings)**
+1. Go to **Settings (gear icon)**
 2. Select **Mashups**
 
 ---
 
-### Step 3 — Add a New Mashup
+### Step 3 — Create Mashup
 
 1. Click **+ Add Mashup**
-2. Enter a name:
-
-   eg. Strategic Objectives Widget Pack
+2. Enter a name (example):
+   Strategic OKR Widget Pack
 
 3. Paste the copied code
 
 ---
 
-### Step 4 — Set Placeholder (CRITICAL STEP)
+### Step 4 — Set Placeholder (CRITICAL)
 
-Find the **Placeholder** field and enter:
+Set:
 
 restui_board
 
@@ -86,19 +113,18 @@ restui_board
 
 Click **Save**
 
-✅ Installation is complete
+✅ Installation complete
 
 ---
 
 ## ✅ Add Widgets to a Dashboard
 
-1. Go to a dashboard
+1. Open a dashboard
 2. Click **+ Add Widget**
-3. Click Header:
-
+3. Search or browse under:
    OKR or Strategic Objectives
 
-4. Add any of the following:
+4. Add any widget:
 
 - Strategic Objectives Status  
 - Strategic Objectives Summary  
@@ -108,53 +134,91 @@ Click **Save**
 
 ## 🎯 What You Will See
 
-- Visual status based on progress
 - Objective-level summaries
 - Key Results nested under each Objective
-- Preview images in the widget picker
+- Progress bars and calculated status
+- Clear visual hierarchy of OKRs
+- Clickable rows that open detailed modal views
 
 ---
 
-## 🧠 Notes
+## 🧠 Status Logic
 
-Status thresholds:
-- 70% and above → On Track
+Status is automatically calculated from progress:
+
+- ≥ 70% → On Track
 - 40–69% → At Risk
-- Below 40% → Critical
+- < 40% → Critical
 
 No custom Status field is required.
 
-Key Results display automatically if they exist.
+---
+
+## 🖱️ How to Use
+
+- Click any Strategic Objective card
+- Click any Key Result row
+
+This opens a modal where you can:
+
+- View full entity details
+- Navigate tabs (Description, Key Results, Relations, etc.)
+- Click into related entities
+- Use native navigation inside the modal
+- Close to return instantly to the dashboard
 
 ---
 
 ## ⚠️ Known Limitations
 
-- Key Results are loaded separately for each Objective  
-- Performance may slow in environments with large numbers of Objectives
+- Key Results are loaded per Objective (API-based)
+- Large data sets may impact performance
+- Modal relies on Targetprocess UI structure (may vary slightly across versions)
 
 ---
 
 ## 🔧 Troubleshooting
 
 ### Widgets do not appear
+
 - Refresh the page
 - Confirm mashup was saved
 - Confirm placeholder = restui_board
 
+---
+
 ### No data showing
+
 - Confirm OKR Solution is installed
 - Confirm Strategic Objectives exist
+- Confirm user has permission to view data
+
+---
+
+### Modal issues
+
+- Hard refresh (Ctrl+Shift+R / Cmd+Shift+R)
+- Ensure latest mashup code is deployed
+
+---
+
+### Scroll issues inside modal
+
+- Reload the page
+- Ensure no browser extensions interfere with iframe behavior
+
+---
 
 ### Preview images not loading
-- Ensure access to GitHub is not blocked
+
+- Ensure GitHub access is allowed in your environment
 
 ---
 
 ## 📁 Repository Structure
 
 /js → mashup install file  
-/img → preview images (used automatically)
+/img → widget preview images  
 
 ---
 
@@ -165,4 +229,4 @@ This widget pack provides:
 - Plug-and-play installation  
 - No configuration required  
 - Works across environments  
-- Visual OKR reporting out of the box
+- Visual OKR reporting  
