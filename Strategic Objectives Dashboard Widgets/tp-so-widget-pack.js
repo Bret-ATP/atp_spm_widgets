@@ -218,6 +218,228 @@ placeholder: placeholder,
 settings: settings || {}
 };
 
+// === INTERACTIVITY HELPER: open entity in dashboard modal iframe ===
+var openEntityModal = function (entityPage, entityId, entityTitle) {
+if (!entityId) return;
+
+$('.tp-okr-modal-overlay').remove();
+
+var hash = window.location.hash || '';
+var appConfigMatch = hash.match(/(?:#|&)appConfig=([^&]+)/);
+var appConfigPart = appConfigMatch ? '&appConfig=' + appConfigMatch[1] : '';
+
+var baseUrl = window.location.origin + window.location.pathname + window.location.search;
+var iframeUrl = baseUrl + '#page=' + entityPage + '/' + entityId + appConfigPart;
+
+var $overlay = $('<div>').addClass('tp-okr-modal-overlay').css({
+position: 'fixed',
+top: 0,
+left: 0,
+right: 0,
+bottom: 0,
+background: 'rgba(17, 24, 39, 0.55)',
+'z-index': 999999,
+display: 'flex',
+'justify-content': 'center',
+'align-items': 'center'
+});
+
+var $modal = $('<div>').css({
+width: '92vw',
+height: '92vh',
+background: '#ffffff',
+'border-radius': '12px',
+'box-shadow': '0 24px 80px rgba(0,0,0,0.35)',
+display: 'flex',
+'flex-direction': 'column',
+overflow: 'hidden'
+});
+
+var $header = $('<div>').css({
+display: 'flex',
+'align-items': 'center',
+'justify-content': 'space-between',
+padding: '12px 16px',
+background: '#f9fafb',
+border: '1px solid #e5e7eb',
+'border-left': 'none',
+'border-right': 'none',
+'border-top': 'none',
+'flex': '0 0 auto'
+});
+
+$header.append(
+$('<div>').text(entityTitle || ('Entity #' + entityId)).css({
+'font-weight': '600',
+color: '#111827',
+'font-size': '14px',
+'white-space': 'nowrap',
+overflow: 'hidden',
+'text-overflow': 'ellipsis',
+'padding-right': '16px'
+})
+);
+
+var $close = $('<button>').text('Close').css({
+background: '#111827',
+color: '#ffffff',
+border: 'none',
+'border-radius': '8px',
+padding: '6px 12px',
+cursor: 'pointer',
+'font-size': '12px',
+'font-weight': '600'
+});
+
+$close.on('click', function () {
+$overlay.remove();
+});
+
+$header.append($close);
+
+var $frameWrap = $('<div>').css({
+position: 'relative',
+flex: '1 1 auto',
+'min-height': 0,
+background: '#ffffff',
+overflow: 'hidden'
+});
+
+var $loading = $('<div>').text('Loading details...').css({
+position: 'absolute',
+top: '12px',
+left: '16px',
+color: '#6b7280',
+'font-size': '13px',
+'z-index': 1
+});
+
+var $iframe = $('<iframe>').attr({
+src: iframeUrl
+}).css({
+position: 'absolute',
+top: 0,
+left: 0,
+width: '100%',
+height: '100%',
+border: '0',
+background: '#ffffff'
+});
+
+var injectTargetedEntityCleanup = function () {
+try {
+var iframe = $iframe[0];
+var doc = iframe.contentDocument || iframe.contentWindow.document;
+if (!doc || !doc.body) return false;
+
+var entityContent = doc.querySelector('.tau-app.tau-page-single.tau-page-entity.i-role-entity-view-container, .tau-page-single.tau-page-entity, .tau-page-entity');
+var mainPane = doc.querySelector('.i-main.tau-app-main-pane, .tau-app-main-pane, [role="main"]');
+var sidePane = doc.querySelector('.tau-app-secondary-pane.i-role-aside, .tau-app-secondary-pane, .i-role-aside');
+
+if (!entityContent || !mainPane) return false;
+
+var styleId = 'tp-okr-modal-targeted-entity-cleanup-style';
+if (!doc.getElementById(styleId)) {
+var style = doc.createElement('style');
+style.id = styleId;
+style.innerHTML = [
+'html, body { margin: 0 !important; padding: 0 !important; width: 100% !important; height: 100% !important; overflow: hidden !important; background: #fff !important; }',
+'.tau-app-secondary-pane, .tau-app-secondary-pane.i-role-aside, .i-role-aside, nav.i-role-views-menu, .t3-views-navigator, .t3-views-catalog, .ReactVirtualized__Grid.ReactVirtualized__List.tau-custom-scrollbar-menu { display: none !important; visibility: hidden !important; width: 0 !important; min-width: 0 !important; max-width: 0 !important; }',
+'.i-main.tau-app-main-pane, .tau-app-main-pane, [role="main"] { left: 0 !important; margin-left: 0 !important; width: 100% !important; max-width: none !important; height: 100vh !important; overflow: auto !important; position: relative !important; }',
+'.tau-app.tau-page-single.tau-page-entity, .tau-page-single.tau-page-entity, .i-role-entity-view-container { display: block !important; visibility: visible !important; opacity: 1 !important; width: 100% !important; max-width: none !important; height: 100vh !important; min-height: 100vh !important; overflow: auto !important; }',
+'.layout-container { height: auto !important; min-height: 100vh !important; max-height: none !important; overflow: visible !important; padding-bottom: 120px !important; }',
+'.grid { min-height: 100vh !important; max-height: none !important; overflow: visible !important; align-items: start !important; }',
+'.stack, .tabs-container { max-height: none !important; }'
+].join('\n');
+(doc.head || doc.documentElement).appendChild(style);
+}
+
+if (sidePane) {
+sidePane.style.display = 'none';
+sidePane.style.visibility = 'hidden';
+sidePane.style.width = '0';
+sidePane.style.minWidth = '0';
+sidePane.style.maxWidth = '0';
+}
+
+mainPane.style.left = '0';
+mainPane.style.marginLeft = '0';
+mainPane.style.width = '100%';
+mainPane.style.maxWidth = 'none';
+mainPane.style.height = '100vh';
+mainPane.style.overflow = 'auto';
+mainPane.style.position = 'relative';
+
+entityContent.style.display = 'block';
+entityContent.style.visibility = 'visible';
+entityContent.style.opacity = '1';
+entityContent.style.width = '100%';
+entityContent.style.maxWidth = 'none';
+entityContent.style.height = '100vh';
+entityContent.style.minHeight = '100vh';
+entityContent.style.overflow = 'auto';
+
+if (!doc.__tpOkrModalWheelFixAttached) {
+doc.__tpOkrModalWheelFixAttached = true;
+doc.addEventListener('wheel', function (event) {
+var scrollTargets = [
+mainPane,
+entityContent,
+doc.querySelector('.layout-container'),
+doc.scrollingElement,
+doc.documentElement,
+doc.body
+].filter(Boolean);
+
+for (var i = 0; i < scrollTargets.length; i++) {
+var target = scrollTargets[i];
+if (target.scrollHeight > target.clientHeight + 2) {
+target.scrollTop += event.deltaY;
+event.preventDefault();
+return;
+}
+}
+}, { passive: false });
+}
+
+return true;
+} catch (err) {
+return false;
+}
+};
+
+$iframe.on('load', function () {
+$loading.hide();
+var attempts = 0;
+var cleanupTimer = setInterval(function () {
+attempts++;
+var cleaned = injectTargetedEntityCleanup();
+if (cleaned || attempts >= 40) clearInterval(cleanupTimer);
+}, 300);
+});
+
+$frameWrap.append($loading);
+$frameWrap.append($iframe);
+$modal.append($header);
+$modal.append($frameWrap);
+$overlay.append($modal);
+$('body').append($overlay);
+
+$overlay.on('click', function (e) {
+if (e.target === $overlay[0]) {
+$overlay.remove();
+}
+});
+
+$(document).off('keydown.tpOkrModal').on('keydown.tpOkrModal', function (e) {
+if (e.key === 'Escape') {
+$('.tp-okr-modal-overlay').remove();
+$(document).off('keydown.tpOkrModal');
+}
+});
+};
+// === END INTERACTIVITY HELPER ===
+
 var renderGrid = function(objectives) {
 
 var $container = $(props.placeholder).empty();
@@ -250,6 +472,34 @@ background: '#f9fafb',
 border: '1px solid #e5e7eb',
 'border-radius': '8px'
 });
+
+// === INTERACTIVITY: Strategic Objective card hover/click ===
+$card.css({
+cursor: 'pointer',
+transition: 'all 0.15s ease'
+});
+
+$card.attr('title', 'Click to open Strategic Objective');
+
+$card.hover(
+function () {
+$(this).css({
+transform: 'translateY(-2px)',
+'box-shadow': '0 6px 16px rgba(0,0,0,0.1)'
+});
+},
+function () {
+$(this).css({
+transform: 'none',
+'box-shadow': 'none'
+});
+}
+);
+
+$card.on('click', function () {
+openEntityModal('strategicobjective', obj.id, obj.name);
+});
+// === END INTERACTIVITY ===
 
 $card.append(
 $('<div>').text(obj.name).css({
@@ -336,6 +586,7 @@ color = '#ef4444';
 }
 
 objectives.push({
+id: obj.Id,
 name: obj.Name,
 progress: progressPct,
 status: status,
@@ -389,6 +640,228 @@ var props = {
 placeholder: placeholder,
 settings: settings || {}
 };
+
+// === INTERACTIVITY HELPER: open entity in dashboard modal iframe ===
+var openEntityModal = function (entityPage, entityId, entityTitle) {
+if (!entityId) return;
+
+$('.tp-okr-modal-overlay').remove();
+
+var hash = window.location.hash || '';
+var appConfigMatch = hash.match(/(?:#|&)appConfig=([^&]+)/);
+var appConfigPart = appConfigMatch ? '&appConfig=' + appConfigMatch[1] : '';
+
+var baseUrl = window.location.origin + window.location.pathname + window.location.search;
+var iframeUrl = baseUrl + '#page=' + entityPage + '/' + entityId + appConfigPart;
+
+var $overlay = $('<div>').addClass('tp-okr-modal-overlay').css({
+position: 'fixed',
+top: 0,
+left: 0,
+right: 0,
+bottom: 0,
+background: 'rgba(17, 24, 39, 0.55)',
+'z-index': 999999,
+display: 'flex',
+'justify-content': 'center',
+'align-items': 'center'
+});
+
+var $modal = $('<div>').css({
+width: '92vw',
+height: '92vh',
+background: '#ffffff',
+'border-radius': '12px',
+'box-shadow': '0 24px 80px rgba(0,0,0,0.35)',
+display: 'flex',
+'flex-direction': 'column',
+overflow: 'hidden'
+});
+
+var $header = $('<div>').css({
+display: 'flex',
+'align-items': 'center',
+'justify-content': 'space-between',
+padding: '12px 16px',
+background: '#f9fafb',
+border: '1px solid #e5e7eb',
+'border-left': 'none',
+'border-right': 'none',
+'border-top': 'none',
+'flex': '0 0 auto'
+});
+
+$header.append(
+$('<div>').text(entityTitle || ('Entity #' + entityId)).css({
+'font-weight': '600',
+color: '#111827',
+'font-size': '14px',
+'white-space': 'nowrap',
+overflow: 'hidden',
+'text-overflow': 'ellipsis',
+'padding-right': '16px'
+})
+);
+
+var $close = $('<button>').text('Close').css({
+background: '#111827',
+color: '#ffffff',
+border: 'none',
+'border-radius': '8px',
+padding: '6px 12px',
+cursor: 'pointer',
+'font-size': '12px',
+'font-weight': '600'
+});
+
+$close.on('click', function () {
+$overlay.remove();
+});
+
+$header.append($close);
+
+var $frameWrap = $('<div>').css({
+position: 'relative',
+flex: '1 1 auto',
+'min-height': 0,
+background: '#ffffff',
+overflow: 'hidden'
+});
+
+var $loading = $('<div>').text('Loading details...').css({
+position: 'absolute',
+top: '12px',
+left: '16px',
+color: '#6b7280',
+'font-size': '13px',
+'z-index': 1
+});
+
+var $iframe = $('<iframe>').attr({
+src: iframeUrl
+}).css({
+position: 'absolute',
+top: 0,
+left: 0,
+width: '100%',
+height: '100%',
+border: '0',
+background: '#ffffff'
+});
+
+var injectTargetedEntityCleanup = function () {
+try {
+var iframe = $iframe[0];
+var doc = iframe.contentDocument || iframe.contentWindow.document;
+if (!doc || !doc.body) return false;
+
+var entityContent = doc.querySelector('.tau-app.tau-page-single.tau-page-entity.i-role-entity-view-container, .tau-page-single.tau-page-entity, .tau-page-entity');
+var mainPane = doc.querySelector('.i-main.tau-app-main-pane, .tau-app-main-pane, [role="main"]');
+var sidePane = doc.querySelector('.tau-app-secondary-pane.i-role-aside, .tau-app-secondary-pane, .i-role-aside');
+
+if (!entityContent || !mainPane) return false;
+
+var styleId = 'tp-okr-modal-targeted-entity-cleanup-style';
+if (!doc.getElementById(styleId)) {
+var style = doc.createElement('style');
+style.id = styleId;
+style.innerHTML = [
+'html, body { margin: 0 !important; padding: 0 !important; width: 100% !important; height: 100% !important; overflow: hidden !important; background: #fff !important; }',
+'.tau-app-secondary-pane, .tau-app-secondary-pane.i-role-aside, .i-role-aside, nav.i-role-views-menu, .t3-views-navigator, .t3-views-catalog, .ReactVirtualized__Grid.ReactVirtualized__List.tau-custom-scrollbar-menu { display: none !important; visibility: hidden !important; width: 0 !important; min-width: 0 !important; max-width: 0 !important; }',
+'.i-main.tau-app-main-pane, .tau-app-main-pane, [role="main"] { left: 0 !important; margin-left: 0 !important; width: 100% !important; max-width: none !important; height: 100vh !important; overflow: auto !important; position: relative !important; }',
+'.tau-app.tau-page-single.tau-page-entity, .tau-page-single.tau-page-entity, .i-role-entity-view-container { display: block !important; visibility: visible !important; opacity: 1 !important; width: 100% !important; max-width: none !important; height: 100vh !important; min-height: 100vh !important; overflow: auto !important; }',
+'.layout-container { height: auto !important; min-height: 100vh !important; max-height: none !important; overflow: visible !important; padding-bottom: 120px !important; }',
+'.grid { min-height: 100vh !important; max-height: none !important; overflow: visible !important; align-items: start !important; }',
+'.stack, .tabs-container { max-height: none !important; }'
+].join('\n');
+(doc.head || doc.documentElement).appendChild(style);
+}
+
+if (sidePane) {
+sidePane.style.display = 'none';
+sidePane.style.visibility = 'hidden';
+sidePane.style.width = '0';
+sidePane.style.minWidth = '0';
+sidePane.style.maxWidth = '0';
+}
+
+mainPane.style.left = '0';
+mainPane.style.marginLeft = '0';
+mainPane.style.width = '100%';
+mainPane.style.maxWidth = 'none';
+mainPane.style.height = '100vh';
+mainPane.style.overflow = 'auto';
+mainPane.style.position = 'relative';
+
+entityContent.style.display = 'block';
+entityContent.style.visibility = 'visible';
+entityContent.style.opacity = '1';
+entityContent.style.width = '100%';
+entityContent.style.maxWidth = 'none';
+entityContent.style.height = '100vh';
+entityContent.style.minHeight = '100vh';
+entityContent.style.overflow = 'auto';
+
+if (!doc.__tpOkrModalWheelFixAttached) {
+doc.__tpOkrModalWheelFixAttached = true;
+doc.addEventListener('wheel', function (event) {
+var scrollTargets = [
+mainPane,
+entityContent,
+doc.querySelector('.layout-container'),
+doc.scrollingElement,
+doc.documentElement,
+doc.body
+].filter(Boolean);
+
+for (var i = 0; i < scrollTargets.length; i++) {
+var target = scrollTargets[i];
+if (target.scrollHeight > target.clientHeight + 2) {
+target.scrollTop += event.deltaY;
+event.preventDefault();
+return;
+}
+}
+}, { passive: false });
+}
+
+return true;
+} catch (err) {
+return false;
+}
+};
+
+$iframe.on('load', function () {
+$loading.hide();
+var attempts = 0;
+var cleanupTimer = setInterval(function () {
+attempts++;
+var cleaned = injectTargetedEntityCleanup();
+if (cleaned || attempts >= 40) clearInterval(cleanupTimer);
+}, 300);
+});
+
+$frameWrap.append($loading);
+$frameWrap.append($iframe);
+$modal.append($header);
+$modal.append($frameWrap);
+$overlay.append($modal);
+$('body').append($overlay);
+
+$overlay.on('click', function (e) {
+if (e.target === $overlay[0]) {
+$overlay.remove();
+}
+});
+
+$(document).off('keydown.tpOkrModal').on('keydown.tpOkrModal', function (e) {
+if (e.key === 'Escape') {
+$('.tp-okr-modal-overlay').remove();
+$(document).off('keydown.tpOkrModal');
+}
+});
+};
+// === END INTERACTIVITY HELPER ===
 
 var getField = function (fields, name) {
 if (!fields) return null;
@@ -456,6 +929,34 @@ background: '#f9fafb',
 border: '1px solid #e5e7eb'
 });
 
+// === INTERACTIVITY: Strategic Objective card hover/click ===
+$card.css({
+cursor: 'pointer',
+transition: 'all 0.15s ease'
+});
+
+$card.attr('title', 'Click to open Strategic Objective');
+
+$card.hover(
+function () {
+$(this).css({
+transform: 'translateY(-2px)',
+'box-shadow': '0 6px 16px rgba(0,0,0,0.1)'
+});
+},
+function () {
+$(this).css({
+transform: 'none',
+'box-shadow': 'none'
+});
+}
+);
+
+$card.on('click', function () {
+openEntityModal('strategicobjective', obj.Id, obj.Name);
+});
+// === END INTERACTIVITY ===
+
 $card.append($('<div>').text(obj.Name).css({
 'font-weight': '600',
 'margin-bottom': '10px'
@@ -499,7 +1000,7 @@ background: soStatus.color
 
 // ✅ FULL KR BLOCK RESTORED
 $.ajax({
-url: '/api/v1/StrategicObjectives/' + obj.Id + '/KeyResults?include=[Name,Progress,CustomFields]&format=json',
+url: '/api/v1/StrategicObjectives/' + obj.Id + '/KeyResults?include=[Id,Name,Progress,CustomFields]&format=json',
 type: 'GET',
 dataType: 'json'
 }).done(function (krResponse) {
@@ -519,6 +1020,33 @@ var $kr = $('<div>').css({
 'margin-bottom': '12px',
 'font-size': '12px'
 });
+
+// === INTERACTIVITY: Key Result hover/click ===
+$kr.css({
+cursor: 'pointer'
+});
+
+$kr.attr('title', 'Click to open Key Result');
+
+$kr.on('click', function (e) {
+e.stopPropagation();
+openEntityModal('keyresult', kr.Id, kr.Name);
+});
+
+$kr.hover(
+function () {
+$(this).css({
+background: '#f3f4f6',
+'border-radius': '6px'
+});
+},
+function () {
+$(this).css({
+background: 'transparent'
+});
+}
+);
+// === END INTERACTIVITY ===
 
 var $hdr = $('<div>').css({
 display: 'flex',
