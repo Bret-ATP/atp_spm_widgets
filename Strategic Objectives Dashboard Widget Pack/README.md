@@ -1,232 +1,76 @@
-# Strategic OKR Widget Pack (Targetprocess)
+# Strategic Objectives Widget Pack (Targetprocess)
 
-This repository provides a set of custom dashboard widgets for visualizing Strategic Objectives and Key Results (OKRs) in Targetprocess (Apptio Targetprocess).
+This pack provides dashboard widgets for strategic objectives in Targetprocess / Apptio Targetprocess.
 
-The widgets are designed to be **plug-and-play**, require **no configuration**, and include **interactive modal navigation** so you can explore entities directly from dashboards.
+## Included Widgets
 
----
+- **Strategic Objectives Status** — aggregate progress/status gauge and RAG distribution.
+- **Strategic Objectives Summary** — card grid with objective progress, calculated status, and state.
+- **Strategic OKR Summary** — objective card grid with nested Key Results.
 
-## 📦 Included Widgets
+## Key Capabilities
 
-This pack includes 3 widgets:
+- Uses native **Strategic Objectives** data from `/api/v1/StrategicObjectives`.
+- Uses native `EntityState` data for state filtering.
+- Calculates visual status from progress:
+  - `>= 70%` → **On Track**
+  - `40–69%` → **At Risk**
+  - `< 40%` → **Critical**
+- Provides click-through modal navigation for objectives and Key Results.
+- Hides the Targetprocess left/folder navigation inside modal entity views.
+- Applies a small modal content inset so entity details are not clipped at the left edge.
+- Removes duplicate internal widget title headers so the Targetprocess dashboard block title is the only visible widget title.
 
-- Strategic Objectives Status
-- Strategic Objectives Summary
-- Strategic OKR Summary (Objectives + Key Results)
+## State Filtering
 
-### ✅ Shared Capabilities
+Each widget includes a shared **State** filter bar at the top of the widget body.
 
-All widgets:
+Example:
 
-- Use native Strategic Objectives and Key Results data
-- Require no configuration
-- Automatically calculate status from progress
-- Display Key Results nested under Objectives
-- Include preview images in the widget picker
-- Support click-through modal navigation
+```text
+State: Total: 12  [All] [Draft (9)] [In Progress (3)]
+```
 
----
+### How Filtering Works
 
-## ✨ Interactive Modal Navigation
+- Filter options are discovered from the `Strategic Objectives` returned by the API.
+- Counts appear in parentheses, for example `Draft (9)`.
+- Selecting one or more state pills filters the widget client-side.
+- Selecting **All** clears the state filter.
+- Filters are synchronized across widgets in the same pack:
+  - filtering in **Strategic Objectives Status** updates **Strategic Objectives Summary** and **Strategic OKR Summary**;
+  - filtering in **Strategic Objectives Summary** updates the other widgets;
+  - filtering in **Strategic OKR Summary** updates the other widgets.
+- The Status widget recalculates its percentage and RAG distribution using only the filtered objective set.
 
-You can now click directly on:
+### Filtering Persistence
 
-- Strategic Objectives
-- Key Results
+Filtering is currently **session-only** and **client-side**.
 
-This opens the entity in a modal overlay:
+- Filters reset to the default **All** state when the dashboard page is reloaded.
+- Filters are not written back to Targetprocess.
+- Filters are not persisted in browser storage.
+- Filters are scoped to this widget pack only and do not currently read Targetprocess dashboard-level filters.
 
-- Removes left-side navigation (folders/sidebar)
-- Preserves full Targetprocess entity behavior
-- Supports navigation within the modal (tabs, relationships, etc.)
-- Maintains breadcrumbs and back navigation
-- Allows scrolling for large entities
-- Keeps your place on the dashboard when closed
+## Installation
 
----
+1. Open **Settings → Mashups** in Targetprocess.
+2. Create or edit the mashup for this widget pack.
+3. Paste the full JavaScript file for this pack.
+4. Set the placeholder to:
 
-## ⚠️ Prerequisites (IMPORTANT)
-
-Before installing, your Targetprocess instance must have the OKR Solution enabled.
-
-These widgets depend on:
-
-- Strategic Objectives
-- Key Results
-- Progress tracking
-
-### ✅ How to Verify
-
-1. Click **Settings (gear icon)**
-2. Go to **Solutions / Installed Solutions**
-3. Confirm you see:
-   - Strategic Objectives
-   - Key Results
-
-### ❌ If Missing
-
-Contact your Targetprocess administrator to enable the OKR Solution.
-
----
-
-## ✅ Installation (Step-by-Step)
-
-### Step 1 — Copy the Widget Code
-
-1. Open:
-   js/tp-widget-pack.js
-
-2. Click **Raw**
-
-3. Select all code (Ctrl+A / Cmd+A)
-
-4. Copy it
-
----
-
-### Step 2 — Open Mashups
-
-1. Go to **Settings (gear icon)**
-2. Select **Mashups**
-
----
-
-### Step 3 — Create Mashup
-
-1. Click **+ Add Mashup**
-2. Enter a name (example):
-   Strategic OKR Widget Pack
-
-3. Paste the copied code
-
----
-
-### Step 4 — Set Placeholder (CRITICAL)
-
-Set:
-
+```text
 restui_board
+```
 
----
+5. Save the mashup.
+6. Refresh the dashboard.
+7. Add the widgets from the dashboard widget picker.
 
-### Step 5 — Save
+## Notes and Limitations
 
-Click **Save**
-
-✅ Installation complete
-
----
-
-## ✅ Add Widgets to a Dashboard
-
-1. Open a dashboard
-2. Click **+ Add Widget**
-3. Search or browse under:
-   OKR or Strategic Objectives
-
-4. Add any widget:
-
-- Strategic Objectives Status  
-- Strategic Objectives Summary  
-- Strategic OKR Summary  
-
----
-
-## 🎯 What You Will See
-
-- Objective-level summaries
-- Key Results nested under each Objective
-- Progress bars and calculated status
-- Clear visual hierarchy of OKRs
-- Clickable rows that open detailed modal views
-
----
-
-## 🧠 Status Logic
-
-Status is automatically calculated from progress:
-
-- ≥ 70% → On Track
-- 40–69% → At Risk
-- < 40% → Critical
-
-No custom Status field is required.
-
----
-
-## 🖱️ How to Use
-
-- Click any Strategic Objective card
-- Click any Key Result row
-
-This opens a modal where you can:
-
-- View full entity details
-- Navigate tabs (Description, Key Results, Relations, etc.)
-- Click into related entities
-- Use native navigation inside the modal
-- Close to return instantly to the dashboard
-
----
-
-## ⚠️ Known Limitations
-
-- Key Results are loaded per Objective (API-based)
-- Large data sets may impact performance
-- Modal relies on Targetprocess UI structure (may vary slightly across versions)
-
----
-
-## 🔧 Troubleshooting
-
-### Widgets do not appear
-
-- Refresh the page
-- Confirm mashup was saved
-- Confirm placeholder = restui_board
-
----
-
-### No data showing
-
-- Confirm OKR Solution is installed
-- Confirm Strategic Objectives exist
-- Confirm user has permission to view data
-
----
-
-### Modal issues
-
-- Hard refresh (Ctrl+Shift+R / Cmd+Shift+R)
-- Ensure latest mashup code is deployed
-
----
-
-### Scroll issues inside modal
-
-- Reload the page
-- Ensure no browser extensions interfere with iframe behavior
-
----
-
-### Preview images not loading
-
-- Ensure GitHub access is allowed in your environment
-
----
-
-## 📁 Repository Structure
-
-/js → mashup install file  
-/img → widget preview images  
-
----
-
-## ✅ Summary
-
-This widget pack provides:
-
-- Plug-and-play installation  
-- No configuration required  
-- Works across environments  
-- Visual OKR reporting  
+- Filtering is based on `EntityState.Id` internally and displays `EntityState.Name` to users.
+- If no objectives exist for a state, that state will not appear as a filter option.
+- Key Results are loaded per objective for the OKR Summary widget.
+- Large datasets may impact initial load time because filtering is currently client-side.
+- State filter selections intentionally reset on page reload.
