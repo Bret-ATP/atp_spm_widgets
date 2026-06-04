@@ -68,7 +68,7 @@ Contact your Targetprocess administrator to enable the OKR Solution.
 1. Click **+ Add Mashup**
 2. Enter a name:
 
-   Strategic OKR Widgets
+   eg. Strategic Objectives Widget Pack
 
 3. Paste the copied code
 
@@ -94,9 +94,9 @@ Click **Save**
 
 1. Go to a dashboard
 2. Click **+ Add Widget**
-3. Search for:
+3. Click Header:
 
-   Strategic
+   OKR or Strategic Objectives
 
 4. Add any of the following:
 
