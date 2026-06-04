@@ -57,9 +57,6 @@ background: 'white',
 'font-family': 'Arial, sans-serif'
 });
 
-$widget.append(
-$('<h3>').text(props.settings.title || 'Strategic Objectives Status')
-);
 
 var $center = $('<div>').css({
 'text-align': 'center',
@@ -450,11 +447,6 @@ background: 'white',
 'border-radius': '8px'
 });
 
-$widget.append(
-$('<h3>').text(
-props.settings.title || 'Strategic Objectives'
-)
-);
 
 var $grid = $('<div>').css({
 display: 'grid',
@@ -902,9 +894,6 @@ background: 'white',
 'border-radius': '8px'
 });
 
-$widget.append(
-$('<h3>').text(props.settings.title || 'Strategic Objectives')
-);
 
 var $grid = $('<div>').css({
 display: 'grid',
